@@ -74,10 +74,10 @@ namespace pocketmine {
 
 	const VERSION = ""; //will be set by CI to a git hash
 	const API_VERSION = "2.0.0";
-	const CODENAME = "Kyrios";
-	const MINECRAFT_VERSION = "v0.15.10 alpha";
-	const MINECRAFT_VERSION_NETWORK = "0.15.10";
-	const GENISYS_API_VERSION = '1.9.3';
+	const CODENAME = "Aliby";
+	const MINECRAFT_VERSION = "v0.16.0.5 alpha";
+	const MINECRAFT_VERSION_NETWORK = "0.16.0.5";
+	const ELYWING_API_VERSION = '1.9.1';
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
@@ -155,7 +155,7 @@ namespace pocketmine {
 			//If system timezone detection fails or timezone is an invalid value.
 			if($response = Utils::getURL("http://ip-api.com/json")
 				and $ip_geolocation_data = json_decode($response, true)
-				and $ip_geolocation_data['status'] !== 'fail'
+				and $ip_geolocation_data['status'] != 'fail'
 				and date_default_timezone_set($ip_geolocation_data['timezone'])
 			){
 				//Again, for redundancy.
@@ -414,15 +414,6 @@ namespace pocketmine {
 			$logger->critical("You have the native PocketMine extension, but your version is higher than 0.0.4.");
 			++$errors;
 		}
-	}
-	
-	if(extension_loaded("xdebug")){
-		$logger->warning("
-
-
-	You are running PocketMine with xdebug enabled. This has a major impact on performance.
-
-		");
 	}
 
 	if(!extension_loaded("curl")){

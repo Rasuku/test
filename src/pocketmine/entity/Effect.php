@@ -23,7 +23,6 @@ namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
-use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\MobEffectPacket;
 use pocketmine\Player;
@@ -205,15 +204,8 @@ class Effect{
 				}
 				return true;
 			case Effect::REGENERATION:
-				if(($interval = (40 >> $this->amplifier)) > 0){
-					return ($this->duration % $interval) === 0;
-				}
-				return true;
 			case Effect::HUNGER:
-				if($this->amplifier < 0){ // prevents hacking with amplifier -1
-					return false;
-				}
-				if(($interval = 20) > 0){
+				if(($interval = (40 >> $this->amplifier)) > 0){
 					return ($this->duration % $interval) === 0;
 				}
 				return true;
@@ -250,8 +242,10 @@ class Effect{
 				}
 				break;
 			case Effect::HUNGER:
-				if($entity instanceof Human){
-					$entity->exhaust(0.5 * $this->amplifier, PlayerExhaustEvent::CAUSE_POTION);
+				if($entity instanceof Player){
+					if($entity->getServer()->foodEnabled){
+						$entity->setFood($entity->getFood() - 1);
+					}
 				}
 				break;
 			case Effect::HEALING:
@@ -331,7 +325,7 @@ class Effect{
 
 		if($this->id === Effect::INVISIBILITY){
 			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);
-			$entity->setDataProperty(Entity::DATA_SHOW_NAMETAG, Entity::DATA_TYPE_BYTE, 0);
+			$entity->setNameTagVisible(false);
 		}
 	}
 
@@ -355,7 +349,7 @@ class Effect{
 
 		if($this->id === Effect::INVISIBILITY){
 			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, false);
-			$entity->setDataProperty(Entity::DATA_SHOW_NAMETAG, Entity::DATA_TYPE_BYTE, 1);
+			$entity->setNameTagVisible(false);
 		}
 	}
 }

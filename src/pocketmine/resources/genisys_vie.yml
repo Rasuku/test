@@ -2,7 +2,7 @@
 
 #Phiên bản file cài đặt
 config:
- version: 21
+ version: 20
 
 level:
  #Chỉnh nếu muốn bật/tắt thời tiết (true/false)
@@ -20,6 +20,10 @@ level:
 player:
  #Bật/tắt nếu muốn thêm chế độ đói (true/false)
  hunger: true
+ #Số máu đói tối đa nếu có người tấn công (mặc định là 20)
+ hunger-health: 10
+ #Thời gian "tấn công" cơn đói, Mặc định là 80=4 giây
+ hunger-timer: 3000
  #Bật/tắt nếu muốn thêm chế độ điểm kinh nghiệm (true/false)
  experience: true
  #Bật/tắt nếu muốn server chết không mất đồ (true/false)
@@ -38,6 +42,8 @@ nether:
  level-name: "nether"
  
 server:
+ #Tái tạo lại hệ thống điểm kinh nghiệm，0=hủy bỏ chế độ
+ experience-cache: 65535
  #Bật/tắt nếu muốn thêm Iron Golem vào server (true/false)
  allow-iron-golem: false
  #Bật/tắt nếu muốn thêm Snow Golem vào server (true/false)

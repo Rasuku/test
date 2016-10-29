@@ -500,7 +500,7 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @return LevelProvider
 	 */
-	final public function getProvider(){
+	final public function getProvider() : LevelProvider{
 		return $this->provider;
 	}
 
@@ -836,9 +836,14 @@ class Level implements ChunkManager, Metadatable{
 
 		foreach($this->motionToSend as $index => $entry){
 			Level::getXZ($index, $chunkX, $chunkZ);
-			$pk = new SetEntityMotionPacket();
-			$pk->entities = $entry;
-			$this->addChunkPacket($chunkX, $chunkZ, $pk);
+			foreach($entry as $entity){
+				$pk = new SetEntityMotionPacket();
+				$pk->eid = $entity[0];
+				$pk->motionX = $entity[1];
+				$pk->motionY = $entity[2];
+				$pk->motionZ = $entity[3];
+				$this->addChunkPacket($chunkX, $chunkZ, $pk);
+			}
 		}
 		$this->motionToSend = [];
 
@@ -1115,7 +1120,6 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $pos
 	 */
 	public function updateAround(Vector3 $pos){
-		$pos = $pos->floor();
 		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y - 1, $pos->z))));
 		if(!$ev->isCancelled()){
 			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
@@ -1990,9 +1994,6 @@ class Level implements ChunkManager, Metadatable{
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
 					foreach($this->getChunkEntities($x, $z) as $ent){
-						if($ent instanceof Player and $ent->isSpectator()){
-							continue;
-						}
 						if($entity == null){
 							if($ent->boundingBox->intersectsWith($bb)){
 								$nearby[] = $ent;
@@ -2029,9 +2030,6 @@ class Level implements ChunkManager, Metadatable{
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				foreach($this->getChunkEntities($x, $z) as $ent){
-					if($ent instanceof Player and $ent->isSpectator()){
-						continue;
-					}
 					if($ent !== $entity and $ent->boundingBox->intersectsWith($bb)){
 						$nearby[] = $ent;
 					}
@@ -3018,9 +3016,9 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * Gets the level seed
 	 *
-	 * @return int|string
+	 * @return int
 	 */
-	public function getSeed(){
+	public function getSeed(): int{
 		return $this->provider->getSeed();
 	}
 

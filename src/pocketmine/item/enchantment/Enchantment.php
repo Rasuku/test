@@ -180,22 +180,11 @@ class Enchantment{
 		return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
 	}
 
-	public static function getEnchantmentByName($name){
+	public static function getEffectByName($name){
 		if(defined(Enchantment::class . "::TYPE_" . strtoupper($name))){
 			return self::getEnchantment(constant(Enchantment::class . "::TYPE_" . strtoupper($name)));
-		}elseif(defined(Enchantment::class . "::TYPE_WEAPON_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_WEAPON_" . strtoupper($name))); 
-		}elseif(defined(Enchantment::class . "::TYPE_ARMOR_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_ARMOR_" . strtoupper($name))); 
-		}elseif(defined(Enchantment::class . "::TYPE_MINING_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_MINING_" . strtoupper($name))); 
-		}elseif(defined(Enchantment::class . "::TYPE_BOW_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_BOW_" . strtoupper($name))); 
-		}elseif(defined(Enchantment::class . "::TYPE_FISHING_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_FISHING_" . strtoupper($name))); 
-		}else{
-			return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
-	    }
+		}
+		return null;
 	}
 
 	public static function getEnchantAbility(Item $item){

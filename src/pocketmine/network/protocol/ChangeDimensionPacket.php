@@ -30,10 +30,10 @@ class ChangeDimensionPacket extends DataPacket{
 	const DIMENSION_NETHER = 1;
 
 	public $dimension;
-
 	public $x;
 	public $y;
 	public $z;
+	public $unknownBool;
 
 	public function decode(){
 
@@ -41,11 +41,9 @@ class ChangeDimensionPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putByte($this->dimension);
-		$this->putFloat($this->x);
-		$this->putFloat($this->y);
-		$this->putFloat($this->z);
-		$this->putByte(0);
+		$this->putVarInt($this->dimension);
+		$this->putVector3f($this->x, $this->y, $this->z);
+		$this->putBool($this->unknownBool);
 	}
 
 }

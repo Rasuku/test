@@ -226,7 +226,7 @@ class EnchantInventory extends TemporaryInventory{
 			for($i = 0; $i < 3; $i++){
 				if($this->checkEnts($enchantments, $this->entries[$i]->getEnchantments())){
 					$lapis = $this->getItem(1);
-					$level = $who->getXpLevel();
+					$level = $who->getExpLevel();
 					$cost = $this->entries[$i]->getCost();
 					if($lapis->getId() == Item::DYE and $lapis->getDamage() == Dye::BLUE and $lapis->getCount() > $i and $level >= $cost){
 						foreach($enchantments as $enchantment){
@@ -235,7 +235,7 @@ class EnchantInventory extends TemporaryInventory{
 						$this->setItem(0, $result);
 						$lapis->setCount($lapis->getCount() - $i - 1);
 						$this->setItem(1, $lapis);
-						$who->takeXpLevel($i + 1);
+						$who->setExpLevel($level - $i - 1);
 						break;
 					}
 				}

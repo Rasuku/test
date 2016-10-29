@@ -187,11 +187,6 @@ class CraftingManager{
 				"PSP",
 				"   "
 			))->setIngredient("S", Item::get(Item::STICK, 0, 2))->setIngredient("P", Item::get(Item::WOODEN_PLANK, Planks::OAK, 4)));
-			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::NETHER_BRICK_FENCE, 0, 3),
-				"PPP",
-				"PPP",
-				"   "
-			))->setIngredient("P", Item::get(Item::NETHER_BRICKS, 0, 6)));
 			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::FENCE, Planks::SPRUCE, 3),
 				"PSP",
 				"PSP",
@@ -407,6 +402,30 @@ class CraftingManager{
 				"IRI",
 				" I"
 			))->setIngredient("I", Item::get(Item::IRON_INGOT, 0, 4))->setIngredient("R", Item::get(Item::REDSTONE_DUST, 0, 1)));
+			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::SEA_LANTERN_BLOCK, 0, 1),
+				"GSG",
+				"SSS",
+				"GSG"
+			))->setIngredient("G", Item::get(Item::PRISMARINE_SHARD, 0, 4))->setIngredient("S", Item::get(Item::PRISMARINE_CRYSTALS, 0, 5)));
+			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::PRISMARINE_BLOCK, 0, 1),
+				"GG",
+				"GG"
+			))->setIngredient("G", Item::get(Item::PRISMARINE_SHARD, 0, 4)));
+			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::PRISMARINE_BLOCK, 2, 1),
+				"GGG",
+				"GGG",
+				"GGG"
+			))->setIngredient("G", Item::get(Item::PRISMARINE_SHARD, 0, 9)));
+			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::BEACON_BLOCK, 0, 1),
+				"GGG",
+				"GSG",
+				"FFF"
+			))->setIngredient("G", Item::get(Item::GLASS, 0, 5))->setIngredient("S", Item::get(Item::NETHER_STAR, 0, 1))->setIngredient("F", Item::get(Item::OBSIDIAN, 0, 3)));
+			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::PRISMARINE_BLOCK, 1, 1),
+				"GGG",
+				"GSG",
+				"GGG"
+			))->setIngredient("G", Item::get(Item::PRISMARINE_SHARD, 0, 8))->setIngredient("S", Item::get(Item::DYE, 0, 1)));
 			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::TNT, 0, 1),
 				"GSG",
 				"SGS",
@@ -424,8 +443,8 @@ class CraftingManager{
 			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::BOOK, 0, 1),
 				"   ",
 				"PP ",
-				"PL "
-			))->setIngredient("P", Item::get(Item::PAPER, 0, 3))->setIngredient("L", Item::get(Item::LEATHER, null, 1)));
+				"P  "
+			))->setIngredient("P", Item::get(Item::PAPER, 0, 3)));
 			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::BOOKSHELF, 0, 1),
 				"PPP",
 				"BBB",
@@ -627,8 +646,7 @@ class CraftingManager{
 			))->setIngredient("X", Item::get(Item::NETHER_BRICK, 0, 4)));
 
 			$this->registerRecipe((new BigShapedRecipe(Item::get(Item::NETHER_BRICKS_STAIRS, 0, 4),
-				"X  ",
-				"XX ",
+				"XXX",
 				"XXX"
 			))->setIngredient("X", Item::get(Item::NETHER_BRICKS, 0, 6)));
 
@@ -926,6 +944,7 @@ class CraftingManager{
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::HARDENED_CLAY, 0, 1), Item::get(Item::CLAY_BLOCK, 0, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COOKED_RABBIT, 0, 1), Item::get(Item::RAW_RABBIT, 0, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COOKED_MUTTON, 0, 1), Item::get(Item::RAW_MUTTON, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::SPONGE, 0, 1), Item::get(Item::SPONGE, 1, 1)));
 		
 		
 	}
@@ -1199,6 +1218,18 @@ class CraftingManager{
 				"YYY"
 			))->setIngredient("X", Item::get(Item::DYE, $i, 1))->setIngredient("Y", Item::get(Item::HARDENED_CLAY, 0, 8)));
 			//TODO: add glass things?
+			$this->registerRecipe((new ShapedRecipe(Item::get(Item::WOOL, 15 - $i, 1),
+				"X ",
+				"Y "
+			))->setIngredient("X", Item::get(Item::DYE, $i, 1))->setIngredient("Y", Item::get(Item::WOOL, 0, 1)));
+			$this->registerRecipe((new ShapedRecipe(Item::get(Item::WOOL, 15 - $i, 1),
+				"X ",
+				"Y "
+			))->setIngredient("X", Item::get(Item::DYE, $i, 1))->setIngredient("Y", Item::get(Item::WOOL, 0, 1)));
+			$this->registerRecipe((new ShapedRecipe(Item::get(Item::WOOL, 15 - $i, 1),
+				"X ",
+				"Y "
+			))->setIngredient("X", Item::get(Item::DYE, $i, 1))->setIngredient("Y", Item::get(Item::WOOL, 0, 1)));
 			$this->registerRecipe((new ShapedRecipe(Item::get(Item::CARPET, $i, 3),
 				"XX"
 			))->setIngredient("X", Item::get(Item::WOOL, $i, 2)));
@@ -1206,9 +1237,6 @@ class CraftingManager{
 		$this->registerRecipe((new ShapedRecipe(Item::get(Item::DYE, 11, 2),
 			"X"
 		))->setIngredient("X", Item::get(Item::DANDELION, 0, 1)));
-		$this->registerRecipe((new ShapedRecipe(Item::get(Item::DYE, 1, 2),
-			"X"
-		))->setIngredient("X", Item::get(Item::POPPY, 0, 1)));
 		$this->registerRecipe((new ShapedRecipe(Item::get(Item::DYE, 15, 3),
 			"X"
 		))->setIngredient("X", Item::get(Item::BONE, 0, 1)));

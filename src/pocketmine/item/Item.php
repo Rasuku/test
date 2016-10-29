@@ -53,22 +53,22 @@ class Item implements ItemIds{
 	/** @var NBT */
 	private static $cachedParser = null;
 
-	private static function parseCompoundTag(string $tag) : CompoundTag{
+	private static function parseCompoundTag(string $tag, bool $network = false) : CompoundTag{
 		if(self::$cachedParser === null){
 			self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
 		}
 
-		self::$cachedParser->read($tag);
+		self::$cachedParser->read($tag, $network);
 		return self::$cachedParser->getData();
 	}
 
-	private static function writeCompoundTag(CompoundTag $tag) : string{
+	private static function writeCompoundTag(CompoundTag $tag, bool $network = false) : string{
 		if(self::$cachedParser === null){
 			self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
 		}
 
 		self::$cachedParser->setData($tag);
-		return self::$cachedParser->write();
+		return self::$cachedParser->write($network);
 	}
 
 
@@ -243,6 +243,9 @@ class Item implements ItemIds{
 			self::$list[self::RAW_MUTTON] = RawMutton::class;
 			self::$list[self::COOKED_MUTTON] = CookedMutton::class;
 			self::$list[self::HOPPER] = Hopper::class;
+			self::$list[self::PRISMARINE_SHARD] = PrismarineShard::class;
+			self::$list[self::PRISMARINE_CRYSTALS] = PrismarineCrystals::class;
+			self::$list[self::NETHER_STAR] = NetherStar::class;
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){
@@ -331,7 +334,7 @@ class Item implements ItemIds{
 		return -1;
 	}
 
-	public static function get($id, $meta = 0, int $count = 1, $tags = "") : Item{
+	public static function get($id, $meta = 0, int $count = 1, $tags = "", bool $networkItem = false) : Item{
 		try{
 			if(is_string($id)){
 				$item = Item::fromString($id);
@@ -341,14 +344,14 @@ class Item implements ItemIds{
 			}
 			$class = self::$list[$id];
 			if($class === null){
-				return (new Item($id, $meta, $count))->setCompoundTag($tags);
+				return (new Item($id, $meta, $count))->setCompoundTag($tags, $networkItem);
 			}elseif($id < 256){
-				return (new ItemBlock(new $class($meta), $meta, $count))->setCompoundTag($tags);
+				return (new ItemBlock(new $class($meta), $meta, $count))->setCompoundTag($tags, $networkItem);
 			}else{
-				return (new $class($meta, $count))->setCompoundTag($tags);
+				return (new $class($meta, $count))->setCompoundTag($tags, $networkItem);
 			}
 		}catch(\RuntimeException $e){
-			return (new Item($id, $meta, $count))->setCompoundTag($tags);
+			return (new Item($id, $meta, $count))->setCompoundTag($tags, $networkItem);
 		}
 	}
 
@@ -403,12 +406,18 @@ class Item implements ItemIds{
 		}
 	}
 
-	public function setCompoundTag($tags){
+	public function setCompoundTag($tags, $fromNetwork = false){
 		if($tags instanceof CompoundTag){
 			$this->setNamedTag($tags);
 		}else{
-			$this->tags = $tags;
-			$this->cachedNBT = null;
+			if($fromNetwork === true){
+				if(strlen($tags) > 0){
+					$this->setNamedTag(self::parseCompoundTag($tags, true));
+				}
+			}else{
+				$this->tags = $tags;
+				$this->cachedNBT = null;
+			}
 		}
 
 		return $this;
@@ -419,6 +428,13 @@ class Item implements ItemIds{
 	 */
 	public function getCompoundTag(){
 		return $this->tags;
+	}
+
+	public function getNetworkCompoundTag(){
+		if(($nbt = $this->getNamedTag()) instanceof CompoundTag){
+			return self::writeCompoundTag($nbt, true);
+		}
+		return "";
 	}
 
 	public function hasCompoundTag() : bool{
@@ -783,7 +799,7 @@ class Item implements ItemIds{
 		}elseif($this->cachedNBT !== null){
 			return $this->cachedNBT;
 		}
-		return $this->cachedNBT = self::parseCompoundTag($this->tags);
+		return $this->cachedNBT = self::parseCompoundTag($this->tags, false);
 	}
 
 	public function setNamedTag(CompoundTag $tag){
@@ -792,7 +808,7 @@ class Item implements ItemIds{
 		}
 
 		$this->cachedNBT = $tag;
-		$this->tags = self::writeCompoundTag($tag);
+		$this->tags = self::writeCompoundTag($tag, false);
 
 		return $this;
 	}
@@ -819,17 +835,6 @@ class Item implements ItemIds{
 
 	final public function isPlaceable() : bool{
 		return $this->canBePlaced();
-	}
-
-	public function canBeConsumed() : bool{
-		return false;
-	}
-
-	public function canBeConsumedBy(Entity $entity) : bool{
-		return $this->canBeConsumed();
-	}
-
-	public function onConsume(Entity $entity){
 	}
 
 	public function getBlock() : Block{

@@ -2,7 +2,7 @@
 
 #設定檔案版本
 config:
- version: 21
+ version: 20
 
 level:
  #設定是否變換天氣
@@ -20,6 +20,10 @@ level:
 player:
  #是否打開飢餓
  hunger: true
+ #飢餓值扣血下限
+ hunger-health: 10
+ #飢餓值飢餓值計時器，預設80=4秒
+ hunger-timer: 3000
  #是否打開經驗系統
  experience: true
  #是否開啟死亡不掉落
@@ -38,6 +42,8 @@ nether:
  level-name: "nether"
  
 server:
+ #經驗數據預生成，0不啟用
+ experience-cache: 65535
  #是否允許生成鐵傀儡
  allow-iron-golem: false
  #是否允許生成雪傀儡

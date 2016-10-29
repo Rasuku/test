@@ -30,10 +30,10 @@ use pocketmine\Player;
 class Creeper extends Monster{
 	const NETWORK_ID = 33;
 
+	const DATA_POWERED = 9;
 	const DATA_SWELL_DIRECTION = 16;
 	const DATA_SWELL = 17;
 	const DATA_SWELL_OLD = 18;
-	const DATA_POWERED = 19;
 
 	public $dropExp = [5, 5];
 	

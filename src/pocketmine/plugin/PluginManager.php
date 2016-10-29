@@ -36,6 +36,9 @@ use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\PluginException;
 
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDeathEvent;
+
 /**
  * Manages all the plugins, Permissions and Permissibles
  */
@@ -240,7 +243,7 @@ class PluginManager{
 							foreach($description->getCompatibleGeniApis() as $version){
 								//Format: majorVersion.minorVersion.patch
 								$version = array_map("intval", explode(".", $version));
-								$apiVersion = array_map("intval", explode(".", $this->server->getGeniApiVersion()));
+								$apiVersion = array_map("intval", explode(".", $this->server->getElyApiVersion()));
 								//Completely different API version
 								if($version[0] > $apiVersion[0]){
 									continue;

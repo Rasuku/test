@@ -1,4 +1,5 @@
 <?php
+
 /*
  *
  *  ____            _        _   __  __ _                  __  __ ____  
@@ -17,13 +18,15 @@
  * 
  *
 */
+
 namespace pocketmine\utils;
+
 #include <rules/DataPacket.h>
-#ifndef COMPILE
-#endif
+
 use pocketmine\item\Item;
 
 class BinaryStream extends \stdClass{
+
 	public $offset;
 	public $buffer;
 
@@ -55,13 +58,24 @@ class BinaryStream extends \stdClass{
 			$this->offset = strlen($this->buffer) - 1;
 			return "";
 		}elseif($len === true){
-			return substr($this->buffer, $this->offset);
+			$str = substr($this->buffer, $this->offset);
+			$this->offset = strlen($this->buffer);
+			return $str;
 		}
+
 		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
 	}
 
 	public function put($str){
 		$this->buffer .= $str;
+	}
+
+	public function getBool() : bool{
+		return (bool) $this->getByte();
+	}
+
+	public function putBool($v){
+		$this->putByte((bool) $v);
 	}
 
 	public function getLong(){
@@ -136,6 +150,7 @@ class BinaryStream extends \stdClass{
 		$this->buffer .= Binary::writeLFloat($v);
 	}
 
+
 	public function getTriad(){
 		return Binary::readTriad($this->get(3));
 	}
@@ -143,6 +158,7 @@ class BinaryStream extends \stdClass{
 	public function putTriad($v){
 		$this->buffer .= Binary::writeTriad($v);
 	}
+
 
 	public function getLTriad(){
 		return Binary::readLTriad($this->get(3));
@@ -165,6 +181,7 @@ class BinaryStream extends \stdClass{
 		for($i = 1; $i <= $len and !$this->feof(); ++$i){
 			$data[] = $this->get($this->getTriad());
 		}
+
 		return $data;
 	}
 
@@ -184,23 +201,22 @@ class BinaryStream extends \stdClass{
 	}
 
 	public function getSlot(){
-		$id = $this->getSignedShort();
+		$id = $this->getVarInt();
 
 		if($id <= 0){
 			return Item::get(0, 0, 0);
 		}
-
-		$cnt = $this->getByte();
-
-		$data = $this->getShort();
+		$auxValue = $this->getVarInt();
+		$data = $auxValue >> 8;
+		$cnt = $auxValue & 0xff;
 
 		$nbtLen = $this->getLShort();
-
 		$nbt = "";
 
 		if($nbtLen > 0){
 			$nbt = $this->get($nbtLen);
 		}
+
 		return Item::get(
 			$id,
 			$data,
@@ -209,28 +225,90 @@ class BinaryStream extends \stdClass{
 		);
 	}
 
+
 	public function putSlot(Item $item){
 		if($item->getId() === 0){
-			$this->putShort(0);
+			$this->putVarInt(0);
 			return;
 		}
 
-		$this->putShort($item->getId());
-		$this->putByte($item->getCount());
-		$this->putShort($item->getDamage() === null ? -1 : $item->getDamage());
+		$this->putVarInt($item->getId());
+		$auxValue = ($item->getDamage() << 8) | $item->getCount();
+		$this->putVarInt($auxValue);
 		$nbt = $item->getCompoundTag();
 		$this->putLShort(strlen($nbt));
 		$this->put($nbt);
-
 	}
 
 	public function getString(){
-		return $this->get($this->getShort());
+		return $this->get($this->getUnsignedVarInt());
 	}
 
 	public function putString($v){
-		$this->putShort(strlen($v));
+		$this->putUnsignedVarInt(strlen($v));
 		$this->put($v);
+	}
+
+	//TODO: varint64
+
+	/**
+	 * Reads an unsigned varint32 from the stream.
+	 */
+	public function getUnsignedVarInt(){
+		return Binary::readUnsignedVarInt($this);
+	}
+
+	/**
+	 * Writes an unsigned varint32 to the stream.
+	 */
+	public function putUnsignedVarInt($v){
+		$this->put(Binary::writeUnsignedVarInt($v));
+	}
+
+	/**
+	 * Reads a signed varint32 from the stream.
+	 */
+	public function getVarInt(){
+		return Binary::readVarInt($this);
+	}
+
+	/**
+	 * Writes a signed varint32 to the stream.
+	 */
+	public function putVarInt($v){
+		$this->put(Binary::writeVarInt($v));
+	}
+
+	public function getEntityId(){
+		return $this->getVarInt();
+	}
+	
+	public function putEntityId($v){
+		$this->putVarInt($v);
+	}
+
+	public function getBlockCoords(&$x, &$y, &$z){
+		$x = $this->getVarInt();
+		$y = $this->getByte();
+		$z = $this->getVarInt();
+	}
+
+	public function putBlockCoords($x, $y, $z){
+		$this->putVarInt($x);
+		$this->putByte($y);
+		$this->putVarInt($z);
+	}
+	
+	public function getVector3f(&$x, &$y, &$z){
+		$x = $this->getLFloat();
+		$y = $this->getLFloat();
+		$z = $this->getLFloat();
+	}
+	
+	public function putVector3f($x, $y, $z){
+		$this->putLFloat($x);
+		$this->putLFloat($y);
+		$this->putLFloat($z);
 	}
 
 	public function feof(){

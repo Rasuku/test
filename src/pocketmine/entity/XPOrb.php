@@ -71,7 +71,7 @@ class XPOrb extends Entity{
 		$minDistance = PHP_INT_MAX;
 		$target = null;
 		foreach($this->getViewers() as $p){
-			if(!$p->isSpectator() and $p->isAlive()){
+			if(!$p->isSpectator()){
 				if(($dist = $p->distance($this)) < $minDistance and $dist < $this->range){
 					$target = $p;
 					$minDistance = $dist;
@@ -105,15 +105,15 @@ class XPOrb extends Entity{
 			}
 
 			if($minDistance <= 1.3){
-				if($this->getLevel()->getServer()->expEnabled and $target->canPickupXp()){
+				if($this->getLevel()->getServer()->expEnabled and $target->canPickupExp()){
 					$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerPickupExpOrbEvent($target, $this->getExperience()));
 					if(!$ev->isCancelled()){
 						$this->kill();
 						$this->close();
 						if($this->getExperience() > 0){
+							$target->addExperience($this->getExperience());
+							$target->resetExpCooldown();
 							$this->level->addSound(new ExpPickupSound($target, mt_rand(0, 1000)));
-							$target->addXp($this->getExperience());
-							$target->resetXpCooldown();
 						}
 					}
 				}
@@ -142,7 +142,7 @@ class XPOrb extends Entity{
 	}
 
 	public function spawnTo(Player $player){
-		$this->setDataProperty(self::DATA_NO_AI, self::DATA_TYPE_BYTE, 1);
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IMMOBILE, 1);
 		$pk = new AddEntityPacket();
 		$pk->type = XPOrb::NETWORK_ID;
 		$pk->eid = $this->getId();

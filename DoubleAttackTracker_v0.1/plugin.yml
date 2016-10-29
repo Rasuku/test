@@ -1,5 +1,0 @@
-#name, main, version and api are required
-name: DoubleAttackTracker
-main: DoubleAttackTracker\MainClass
-version: 0.1
-api: 1.12.0
